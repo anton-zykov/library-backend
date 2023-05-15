@@ -1,0 +1,19 @@
+{
+  "name": "library-backend",
+  "version": "1.0.0",
+  "description": "part 8 fullstackopen",
+  "main": "index.js",
+  "author": "Anton Zykov <anton.zykov1@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@apollo/server": "^4.7.1",
+    "graphql": "^16.6.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.40.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.32.2"
+  }
+}
