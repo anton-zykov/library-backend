@@ -1,7 +1,7 @@
-const { ApolloServer } = require('@apollo/server')
-const { startStandaloneServer } = require('@apollo/server/standalone')
+const { ApolloServer } = require('@apollo/server');
+const { startStandaloneServer } = require('@apollo/server/standalone');
 
-let authors = [
+const authors = [
   {
     name: 'Robert Martin',
     id: 'afa51ab0-344d-11e9-a414-719c6709cf3e',
@@ -27,7 +27,7 @@ let authors = [
   },
 ];
 
-let books = [
+const books = [
   {
     title: 'Clean Code',
     published: 2008,
@@ -88,10 +88,16 @@ const typeDefs = `
     id: ID
   }
 
+  type Author {
+    name: String!
+    bookCount: Int!
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks: [Book!]!
+    allAuthors: [Author!]!
   }
 `;
 
@@ -99,7 +105,14 @@ const resolvers = {
   Query: {
     bookCount: () => books.length,
     authorCount: () => authors.length,
-    allBooks: () => books
+    allBooks: () => books,
+    allAuthors: () => authors.map((author) => {
+      const bookCount = books.filter((book) => book.author === author.name).length;
+      return {
+        name: author.name,
+        bookCount
+      };
+    })
   }
 };
 
