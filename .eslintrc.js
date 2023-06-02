@@ -16,6 +16,7 @@ module.exports = {
         'import/newline-after-import': 0,
         'object-curly-newline': 0,
         'comma-dangle': 0,
-        'no-underscore-dangle': 0
+        'no-underscore-dangle': 0,
+        'import/no-extraneous-dependencies': 0
     }
 };

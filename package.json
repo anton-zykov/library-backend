@@ -5,9 +5,15 @@
   "main": "index.js",
   "author": "Anton Zykov <anton.zykov1@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "start": "npx nodemon"
+  },
   "dependencies": {
     "@apollo/server": "^4.7.1",
+    "dotenv": "^16.1.3",
     "graphql": "^16.6.0",
+    "mongoose": "^7.2.2",
+    "mongoose-unique-validator": "^4.0.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
@@ -15,6 +21,7 @@
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsx-a11y": "^6.7.1",
-    "eslint-plugin-react": "^7.32.2"
+    "eslint-plugin-react": "^7.32.2",
+    "nodemon": "^2.0.22"
   }
 }
