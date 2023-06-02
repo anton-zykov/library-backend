@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 const Author = require('./models/Author');
 const Book = require('./models/Book');
+const { GraphQLError } = require('graphql');
 
 require('dotenv').config();
 const { MONGODB_URI } = process.env;
@@ -17,32 +18,6 @@ mongoose.connect(MONGODB_URI)
   .catch((error) => {
     console.log('error connection to MongoDB:', error.message);
   });
-
-/* let authors = [
-  {
-    name: 'Robert Martin',
-    id: 'afa51ab0-344d-11e9-a414-719c6709cf3e',
-    born: 1952,
-  },
-  {
-    name: 'Martin Fowler',
-    id: 'afa5b6f0-344d-11e9-a414-719c6709cf3e',
-    born: 1963
-  },
-  {
-    name: 'Fyodor Dostoevsky',
-    id: 'afa5b6f1-344d-11e9-a414-719c6709cf3e',
-    born: 1821
-  },
-  {
-    name: 'Joshua Kerievsky', // birthyear not known
-    id: 'afa5b6f2-344d-11e9-a414-719c6709cf3e',
-  },
-  {
-    name: 'Sandi Metz', // birthyear not known
-    id: 'afa5b6f3-344d-11e9-a414-719c6709cf3e',
-  },
-]; */
 
 const typeDefs = `
   type Book {
@@ -109,8 +84,8 @@ const resolvers = {
       const authors = await Author.find({});
 
       return authors.map(async (author) => {
-        const bookCount = await Book.collection.countDocuments({ author: author.name });
-        return { id: author.id, name: author.name, born: author.born, bookCount };
+        const books = await Book.find({ author });
+        return { id: author.id, name: author.name, born: author.born, bookCount: books.length };
       });
     }
   },
@@ -119,8 +94,31 @@ const resolvers = {
       // Add author if this is his/her first book.
       let author = await Author.findOne({ name: args.author });
       if (!author) {
+        if (args.author.length < 4) {
+          throw new GraphQLError(
+            'Author\'s name should be at least 4 characters long.',
+            {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.name
+              }
+            }
+          );
+        }
         author = new Author({ name: args.author });
         await author.save();
+      }
+
+      if (args.title.length < 4) {
+        throw new GraphQLError(
+          'Book\'s title should be at least 4 characters long.',
+          {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.title
+            }
+          }
+        );
       }
 
       const book = new Book({ ...args, author });
@@ -130,7 +128,17 @@ const resolvers = {
     editAuthor: async (_, args) => {
       const author = await Author.findOne({ name: args.name });
 
-      if (!author) return null;
+      if (!author) {
+        throw new GraphQLError(
+          'The user does not exist.',
+          {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.name
+            }
+          }
+        );
+      }
 
       author.born = args.setBornTo;
       return author.save();
